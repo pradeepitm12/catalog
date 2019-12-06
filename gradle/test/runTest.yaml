@@ -1,0 +1,15 @@
+apiVersion: tekton.dev/v1alpha1
+kind: TaskRun
+metadata:
+  name: gradle-build-test 
+spec:
+  inputs:
+    resources:
+    - name: source
+      resourceRef:
+        name: gradle-app-res
+    params:
+      - name: GRADLE_PROPERTIES
+        value: "-Dorg.gradle.caching=false"
+  taskRef:
+    name: gradle-build

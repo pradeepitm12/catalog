@@ -1,0 +1,28 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: gradle-build
+spec:
+  inputs:
+    params:
+      - name: GRADLE_PROPERTIES
+        description: System properties of gradle
+        type: string
+        default: ""
+      - name: GRADLE_TASK
+        description: The Gradle task to run
+        default: "build"
+    resources:
+    - name: source
+      type: git
+      targetPath: /workspace/source/app/
+  steps:
+    - name: build
+      image: gradle:jre8
+      command:
+        - /bin/bash
+      args:
+        - -c
+        - "gradle $(GRADLE_PROPERTIES) $(GRADLE_TASK)"
+      securityContext:
+        privileged: true 
