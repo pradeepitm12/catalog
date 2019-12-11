@@ -11,18 +11,21 @@ spec:
         default: ""
       - name: GRADLE_TASK
         description: The Gradle task to run
+        type: string
         default: "build"
     resources:
     - name: source
       type: git
-      targetPath: /workspace/source/app/
   steps:
     - name: build
-      image: gradle:jre8
+      image: gradle:jdk8
+      workingDir: /workspace/source/app
       command:
-        - /bin/bash
-      args:
+        - /bin/bash 
         - -c
-        - "gradle $(GRADLE_PROPERTIES) $(GRADLE_TASK)"
+      args:
+        - |-
+          gradle $(inputs.params.GRADLE_PROPERTIES) $(inputs.params.GRADLE_TASK)
       securityContext:
         privileged: true 
+
