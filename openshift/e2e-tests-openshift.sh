@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+
+source $(dirname $0)/../vendor/github.com/tektoncd/plumbing/scripts/e2e-tests.sh
 #
 # This will runs the E2E tests on OpenShift
 #
@@ -20,6 +22,8 @@ SKIP_TESTS="docker-build orka-full"
 
 # Service Account used for image builder
 SERVICE_ACCOUNT=builder
+
+TEKTON_PIPELINE_NAMESPACE="tekton-pipelines"
 
 function check-service-endpoints() {
   service=${1}
@@ -51,8 +55,11 @@ cd $(dirname $(readlink -f $0))/..
 # Install CI
 [[ -z ${LOCAL_CI_RUN} ]] && install_pipeline_crd
 
+# until all the pods are running
+wait_until_pods_running $TEKTON_PIPELINE_NAMESPACE || return 1
+
 # list tekton-pipelines-webhook service endpoints
-check-service-endpoints "tekton-pipelines-webhook" "tekton-pipelines"
+check-service-endpoints "tekton-pipelines-webhook" $TEKTON_PIPELINE_NAMESPACE
 
 CURRENT_TAG=$(git describe --tags 2>/dev/null || true)
 
